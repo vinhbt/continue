@@ -2,6 +2,7 @@ import {
   ArrowLeftEndOnRectangleIcon,
   CheckIcon,
   PlayIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 import { useContext, useState } from "react";
 import styled from "styled-components";
@@ -10,6 +11,8 @@ import { IdeMessengerContext } from "../../context/IdeMessenger";
 import { isJetBrains } from "../../util";
 import HeaderButtonWithText from "../HeaderButtonWithText";
 import { CopyButton } from "./CopyButton";
+import { useNavigate } from "react-router-dom";
+import { setLocalStorage } from "../../util/localStorage";
 
 const TopDiv = styled.div`
   position: sticky;
@@ -72,6 +75,7 @@ function isTerminalCodeBlock(language: string | undefined, text: string) {
 
 function CodeBlockToolBar(props: CodeBlockToolBarProps) {
   const ideMessenger = useContext(IdeMessengerContext);
+  const navigate = useNavigate();
 
   const [copied, setCopied] = useState(false);
   const [applying, setApplying] = useState(false);
@@ -123,6 +127,18 @@ function CodeBlockToolBar(props: CodeBlockToolBarProps) {
           }}
         >
           <ArrowLeftEndOnRectangleIcon className="w-4 h-4" />
+        </HeaderButtonWithText>
+
+        <HeaderButtonWithText
+          text="Preview Code2"
+          style={{ backgroundColor: vscEditorBackground }}
+          onClick={() => {
+            // ideMessenger.post("insertAtCursor", { text: props.text });
+            setLocalStorage("previewInfo", { text: props.text, showCode: true, language: props.language });
+            navigate("/preview");
+          }}
+        >
+          <EyeIcon className="w-4 h-4" />
         </HeaderButtonWithText>
         <CopyButton text={props.text} />
       </SecondDiv>
