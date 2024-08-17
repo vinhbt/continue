@@ -1,6 +1,7 @@
 import { JSONContent } from "@tiptap/react";
 import { IndexingProgressUpdate } from "core";
 import { OnboardingStatus } from "../pages/onboarding/utils";
+import { PreviewProps } from "../pages/CodePreview/utils";
 
 type LocalStorageTypes = {
   onboardingStatus?: OnboardingStatus;
@@ -17,6 +18,7 @@ type LocalStorageTypes = {
   showTutorialCard: boolean;
   shownProfilesIntroduction: boolean;
   disableIndexing: boolean;
+  previewInfo: PreviewProps
 };
 
 export function getLocalStorage<T extends keyof LocalStorageTypes>(
