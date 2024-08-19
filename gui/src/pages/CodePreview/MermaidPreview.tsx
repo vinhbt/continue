@@ -7,7 +7,7 @@ const MermaidPreview: React.FC<{ theme: string, chart: string }> = ({ theme, cha
       theme: theme,
     });
     mermaid.contentLoaded(); // This will render the Mermaid diagrams
-  }, [chart]);
+  }, [chart, theme]);
 
   return (
     <div className="flex h-full w-full grow flex-col justify-center">
