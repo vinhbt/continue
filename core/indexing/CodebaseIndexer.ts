@@ -1,7 +1,7 @@
 import * as fs from "fs/promises";
 import { ConfigHandler } from "../config/ConfigHandler.js";
 import { IContinueServerClient } from "../continueServer/interface.js";
-import { IDE, IndexTag, IndexingProgressUpdate } from "../index.js";
+import { IDE, IndexingProgressUpdate, IndexTag } from "../index.js";
 import { extractMinimalStackTraceInfo } from "../util/extractMinimalStackTraceInfo.js";
 import { getIndexSqlitePath, getLanceDbPath } from "../util/paths.js";
 import { ChunkCodebaseIndex } from "./chunk/ChunkCodebaseIndex.js";
@@ -34,7 +34,7 @@ export class CodebaseIndexer {
    * - To limit memory usage for indexes that perform computations locally, e.g. FTS
    * - To make as few requests as possible to the embeddings providers
    */
-  filesPerBatch = 1000;
+  filesPerBatch = 500;
 
   // Note that we exclude certain Sqlite errors that we do not want to clear the indexes on,
   // e.g. a `SQLITE_BUSY` error.
@@ -126,6 +126,12 @@ export class CodebaseIndexer {
       results.removeTag = [];
       results.addTag = [];
       results.del = [];
+
+      // Don't update if nothing to update. Some of the indices might do unnecessary setup work
+      if (results.compute.length === 0) {
+        continue;
+      }
+
       for await (const _ of index.update(
         tag,
         results,
@@ -371,28 +377,33 @@ export class CodebaseIndexer {
         results.addTag.length +
         results.removeTag.length;
       let completedOps = 0;
-      for (const subResult of this.batchRefreshIndexResults(results)) {
-        for await (const { desc } of codebaseIndex.update(
-          tag,
-          subResult,
-          markComplete,
-          repoName,
-        )) {
-          yield {
-            progress: progress,
-            desc,
-            status: "indexing",
-          };
+
+      // Don't update if nothing to update. Some of the indices might do unnecessary setup work
+      if (totalOps > 0) {
+        for (const subResult of this.batchRefreshIndexResults(results)) {
+          for await (const { desc } of codebaseIndex.update(
+            tag,
+            subResult,
+            markComplete,
+            repoName,
+          )) {
+            yield {
+              progress: progress,
+              desc,
+              status: "indexing",
+            };
+          }
+          completedOps +=
+            subResult.compute.length +
+            subResult.del.length +
+            subResult.addTag.length +
+            subResult.removeTag.length;
+          progress =
+            (completedIndexCount + completedOps / totalOps) *
+            (1 / indexesToBuild.length);
         }
-        completedOps +=
-          subResult.compute.length +
-          subResult.del.length +
-          subResult.addTag.length +
-          subResult.removeTag.length;
-        progress =
-          (completedIndexCount + completedOps / totalOps) *
-          (1 / indexesToBuild.length);
       }
+
       await markComplete(lastUpdated, IndexResultType.UpdateLastUpdated);
       completedIndexCount += 1;
     }

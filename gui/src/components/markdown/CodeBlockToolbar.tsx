@@ -75,6 +75,7 @@ function isTerminalCodeBlock(language: string | undefined, text: string) {
 
 function CodeBlockToolBar(props: CodeBlockToolBarProps) {
   const ideMessenger = useContext(IdeMessengerContext);
+
   const navigate = useNavigate();
 
   const [copied, setCopied] = useState(false);
