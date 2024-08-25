@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codesandbox/sandpack-react": "^2.18.2",
+    "@codesandbox/sandpack-react": "^2.18.3",
     "@codesandbox/sandpack-themes": "^2.0.21",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",

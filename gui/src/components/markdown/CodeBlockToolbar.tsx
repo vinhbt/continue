@@ -78,7 +78,6 @@ function CodeBlockToolBar(props: CodeBlockToolBarProps) {
 
   const navigate = useNavigate();
 
-  const [copied, setCopied] = useState(false);
   const [applying, setApplying] = useState(false);
 
   return (

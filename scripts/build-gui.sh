@@ -7,6 +7,7 @@ set -e
 
 echo "Installing GUI extension dependencies..."
 pushd gui
+npm link @continuedev/core
 npm run build
 popd
 
