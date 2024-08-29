@@ -25,6 +25,7 @@ export interface ChunkWithoutID {
   content: string;
   startLine: number;
   endLine: number;
+  signature?: string;
   otherMetadata?: { [key: string]: any };
 }
 
@@ -777,7 +778,8 @@ export type EmbeddingsProviderName =
   | "free-trial"
   | "gemini"
   | "continue-proxy"
-  | "deepinfra";
+  | "deepinfra"
+  | "voyage";
 
 export interface EmbedOptions {
   apiBase?: string;
