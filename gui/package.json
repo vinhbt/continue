@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codesandbox/sandpack-react": "^2.19.1",
+    "@codesandbox/sandpack-themes": "^2.0.21",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@monaco-editor/react": "^4.6.0",
@@ -29,9 +31,11 @@
     "@tiptap/suggestion": "^2.1.13",
     "@types/vscode-webview": "^1.57.1",
     "core": "file:../core",
+    "dedent": "^1.5.3",
     "dompurify": "^3.0.6",
     "downshift": "^7.6.0",
     "lodash": "^4.17.21",
+    "mermaid": "^11.0.2",
     "minisearch": "^7.0.2",
     "onigasm": "^2.2.5",
     "posthog-js": "^1.130.1",
