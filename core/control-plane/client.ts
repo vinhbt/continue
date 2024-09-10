@@ -18,13 +18,17 @@ export interface ControlPlaneWorkspace {
 
 export interface ControlPlaneModelDescription extends ModelDescription {}
 
+//local-s
+export const CONTROL_PLANE_VTI_URL = "http://localhost:3001/";
+
 export const CONTROL_PLANE_URL =
   process.env.CONTROL_PLANE_ENV === "local"
     ? "http://localhost:3001/"
     : "https://control-plane-api-service-i3dqylpbqa-uc.a.run.app/";
 
 export class ControlPlaneClient {
-  private static URL = CONTROL_PLANE_URL;
+  //private static URL = CONTROL_PLANE_URL;
+  private static URL = CONTROL_PLANE_VTI_URL;
   private static ACCESS_TOKEN_VALID_FOR_MS = 1000 * 60 * 5; // 5 minutes
 
   private lastAccessTokenRefresh = 0;

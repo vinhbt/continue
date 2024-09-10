@@ -29,8 +29,8 @@ class ContinueAuthService {
         private const val REFRESH_TOKEN_KEY = "ContinueRefreshToken"
         private const val ACCOUNT_ID_KEY = "ContinueAccountId"
         private const val ACCOUNT_LABEL_KEY = "ContinueAccountLabel"
-        private const val CONTROL_PLANE_URL = "https://control-plane-api-service-i3dqylpbqa-uc.a.run.app"
-//        private const val CONTROL_PLANE_URL = "http://localhost:3001"
+        //private const val CONTROL_PLANE_URL = "https://control-plane-api-service-i3dqylpbqa-uc.a.run.app"
+        private const val CONTROL_PLANE_URL = "http://localhost:3001"
     }
 
     init {
@@ -70,7 +70,11 @@ class ContinueAuthService {
                 val firstName = user?.get("firstName") as? String
                 val lastName = user?.get("lastName") as? String
                 val label = "$firstName $lastName"
-                val id = user?.get("id") as? String
+                val id = when (val idVal = user?.get("id")) {
+                    is String -> idVal
+                    is Double -> idVal.toString()
+                    else -> null
+                }
 
                 // Persist the session info
                 setRefreshToken(refreshToken!!)
@@ -103,7 +107,7 @@ class ContinueAuthService {
 
     private suspend fun refreshToken(refreshToken: String) = withContext(Dispatchers.IO) {
         val client = OkHttpClient()
-        val url = URL(CONTROL_PLANE_URL).toURI().resolve("/auth/refresh").toURL()
+        val url = URL(CONTROL_PLANE_URL).toURI().resolve("/api/v1/auth/mobile/refresh").toURL()
         val jsonBody = mapOf("refreshToken" to refreshToken)
         val jsonString = Gson().toJson(jsonBody)
         val requestBody = jsonString.toRequestBody("application/json".toMediaType())
