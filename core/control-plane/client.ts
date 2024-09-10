@@ -19,7 +19,7 @@ export interface ControlPlaneWorkspace {
 export interface ControlPlaneModelDescription extends ModelDescription {}
 
 //local-s
-export const CONTROL_PLANE_VTI_URL = "http://localhost:3001/";
+export const CONTROL_PLANE_VTI_URL = "http://localhost:3001/api/v1/";
 
 export const CONTROL_PLANE_URL =
   process.env.CONTROL_PLANE_ENV === "local"

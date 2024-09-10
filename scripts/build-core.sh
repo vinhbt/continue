@@ -7,7 +7,7 @@ set -e
 
 echo "Installing Core extension dependencies..."
 pushd binary
-npm run build --esbuild-only
+npm run build
 popd
 
 echo "Done"
