@@ -1,10 +1,11 @@
 import { JSONContent } from "@tiptap/react";
 import { IndexingProgressUpdate } from "core";
-import { OnboardingStatus } from "../pages/onboarding/utils";
+import { OnboardingStatus } from "../components/OnboardingCard";
 import { PreviewProps } from "../pages/CodePreview/utils";
 
 type LocalStorageTypes = {
   onboardingStatus?: OnboardingStatus;
+  hasDismissedOnboardingCard: boolean;
   mainTextEntryCounter: number;
   ide: "vscode" | "jetbrains";
   ftc: number;
@@ -13,8 +14,6 @@ type LocalStorageTypes = {
   inputHistory: JSONContent[];
   extensionVersion: string;
   indexingState: IndexingProgressUpdate;
-  signedInToGh: boolean;
-  isOnboardingInProgress: boolean;
   showTutorialCard: boolean;
   shownProfilesIntroduction: boolean;
   disableIndexing: boolean;

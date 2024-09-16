@@ -22,6 +22,13 @@ export type ProtocolGeneratorType<T> = AsyncGenerator<{
   content: T;
 }>;
 
+export type OnboardingModes =
+  | "Local"
+  | "Best"
+  | "Custom"
+  | "Quickstart"
+  | "LocalAfterFreeTrial";
+
 export interface ListHistoryOptions {
   offset?: number;
   limit?: number;
@@ -140,13 +147,7 @@ export type ToCoreFromIdeOrWebviewProtocol = {
   "index/indexingProgressBarInitialized": [undefined, void];
   completeOnboarding: [
     {
-      mode:
-        | "local"
-        | "apiKeys"
-        | "custom"
-        | "freeTrial"
-        | "localAfterFreeTrial"
-        | "bestExperience";
+      mode: OnboardingModes;
     },
     void,
   ];
