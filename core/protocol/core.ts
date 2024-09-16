@@ -1,6 +1,6 @@
 import type { AutocompleteInput } from "../autocomplete/completionProvider";
 import { ProfileDescription } from "../config/ConfigHandler";
-import type {
+import {
   BrowserSerializedContinueConfig,
   ChatMessage,
   ContextItemWithId,
@@ -10,7 +10,7 @@ import type {
   LLMFullCompletionOptions,
   MessageContent,
   ModelDescription,
-  PersistedSessionInfo,
+  PersistedSessionInfo, PromptItem, PromptPublish,
   RangeInFile,
   SerializedContinueConfig,
   SessionInfo,
@@ -47,6 +47,9 @@ export type ToCoreFromIdeOrWebviewProtocol = {
     void,
   ];
   "config/newPromptFile": [undefined, void];
+  // Prompts
+  "config/listPromptFile": [undefined, PromptItem[]];
+  "config/publishPrompt": [PromptItem, PromptPublish | null];
   "config/ideSettingsUpdate": [IdeSettings, void];
   "config/getSerializedProfileInfo": [
     undefined,

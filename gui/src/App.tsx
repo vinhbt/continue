@@ -20,6 +20,7 @@ import Onboarding from "./pages/onboarding/Onboarding";
 import SettingsPage from "./pages/settings";
 import Stats from "./pages/stats";
 import PreviewCode from "./pages/CodePreview/preview";
+import PromptLocal from "./pages/prompts/PromptLocal";
 
 const router = createMemoryRouter([
   {
@@ -90,6 +91,10 @@ const router = createMemoryRouter([
       {
         path: "/preview",
         element: <PreviewCode />,
+      },
+      {
+        path: "/prompts",
+        element: <PromptLocal />,
       },
     ],
   },

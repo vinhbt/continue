@@ -979,6 +979,21 @@ export type ContinueRcJson = Partial<SerializedContinueConfig> & {
   mergeBehavior: ConfigMergeType;
 };
 
+// Prompt publish
+export interface PromptItem {
+  name: string;
+  fileUrl: string;
+}
+
+export interface PromptPublish {
+  profileId: string;
+  name: string;
+  content: string;
+  description?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 // config.ts - give users simplified interfaces
 export interface Config {
   /** If set to true, Continue will collect anonymous usage data to improve the product. If set to false, we will collect nothing. Read here to learn more: https://docs.continue.dev/telemetry */

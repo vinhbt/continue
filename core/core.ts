@@ -8,7 +8,7 @@ import {
   setupLocalAfterFreeTrial,
   setupLocalMode,
 } from "./config/onboarding";
-import { createNewPromptFile } from "./config/promptFile";
+import { createNewPromptFile, DEFAULT_PROMPTS_FOLDER, getPromptFileNames } from "./config/promptFile";
 import { addModel, addOpenAIKey, deleteModel } from "./config/util";
 import { recentlyEditedFilesCache } from "./context/retrieval/recentlyEditedFilesCache";
 import { ContinueServerClient } from "./continueServer/stubs/client";
@@ -28,6 +28,7 @@ import { editConfigJson } from "./util/paths";
 import { Telemetry } from "./util/posthog";
 import { TTS } from "./util/tts";
 import { streamDiffLines } from "./util/verticalEdit";
+import path from "path";
 
 export class Core {
   // implements IMessenger<ToCoreProtocol, FromCoreProtocol>
@@ -246,6 +247,45 @@ export class Core {
         (await this.config()).experimental?.promptPath,
       );
       this.configHandler.reloadConfig();
+    });
+
+    on("config/listPromptFile", async (msg) => {
+      const workspaceDirs = await ide.getWorkspaceDirs();
+      if (workspaceDirs.length === 0) {
+        return [];
+      }
+      const promptPath = path.join(
+        workspaceDirs[0],
+        (await this.config()).experimental?.promptPath ?? DEFAULT_PROMPTS_FOLDER,
+      );
+      return getPromptFileNames(
+        this.ide,
+        promptPath,
+      );
+    });
+
+    on("config/publishPrompt", async (msg) => {
+      return this.ide.fileExists(msg.data.fileUrl).then(async (exists) => {
+        if (!exists) {
+          await this.ide.showToast("error", `File not found: ${msg.data.fileUrl}`);
+          return null;
+        } else {
+          const promptContent = await this.ide.readFile(msg.data.fileUrl);
+          const profileId = this.configHandler.currentProfile.profileId;
+          const results =  await this.controlPlaneClient.publishPromptForWorkspace({
+            name: msg.data.name,
+            content: promptContent,
+            profileId: profileId,
+          });
+          if (results) {
+            await this.ide.showToast("info", `Prompt published: ${msg.data.name}`);
+            return results;
+          } else {
+            await this.ide.showToast("error", `Failed to publish prompt: ${msg.data.name}`);
+            return null;
+          }
+        }
+      });
     });
 
     on("config/reload", (msg) => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { PreviewProps } from "./utils";
-import { SandpackPreview, SandpackProvider } from "@codesandbox/sandpack-react";
+import { SandpackPreview, SandpackProvider, SandpackCodeEditor, SandpackLayout  } from "@codesandbox/sandpack-react";
 import MermaidPreview from "./MermaidPreview";
 import dedent from "dedent";
 
@@ -19,28 +19,30 @@ const SandPackPreviewCode: React.FC<{ previewInfo: PreviewProps }> = ({ previewI
         <SandpackProvider
           template="vanilla"
           files={{
-            '/index.html': {
+            "/index.html": {
               code: previewInfo.text,
               active: true,
             },
+            "/index.js": {
+              code: "//No js code",
+            }
           }}
           options={{
             visibleFiles: ['/index.html'],
             activeFile: '/index.html',
           }}
-          customSetup={{
-            entry: '/index.html',
-          }}
           style={ fullScreenStyle }
           className={ providerClass }
-          >
-            <SandpackPreview
-              className={ previewClass }
-              showOpenInCodeSandbox={true}
-              showRefreshButton={true}
-              style={ fullScreenStyle }
-            />
-          </SandpackProvider>
+        >
+            <SandpackLayout>
+              <SandpackPreview
+                className={ previewClass }
+                showOpenInCodeSandbox={true}
+                showRefreshButton={true}
+                style={ fullScreenStyle }
+              />
+            </SandpackLayout>
+        </SandpackProvider>
       );
       break;
     case 'tsx':
@@ -66,7 +68,7 @@ const SandPackPreviewCode: React.FC<{ previewInfo: PreviewProps }> = ({ previewI
             <SandpackPreview
               className={previewClass}
               showOpenInCodeSandbox={true}
-              showRefreshButton={false}
+              showRefreshButton={true}
               style={ fullScreenStyle }
             />
           </SandpackProvider>

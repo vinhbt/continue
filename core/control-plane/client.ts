@@ -1,6 +1,6 @@
 import { ConfigJson } from "@continuedev/config-types";
 import fetch, { RequestInit, Response } from "node-fetch";
-import { ModelDescription } from "../index.js";
+import { ModelDescription, PromptPublish } from "../index.js";
 
 export interface ControlPlaneSessionInfo {
   accessToken: string;
@@ -99,4 +99,23 @@ export class ControlPlaneClient {
     });
     return ((await resp.json()) as any).settings;
   }
+
+  async publishPromptForWorkspace(data: PromptPublish): Promise<PromptPublish> {
+    const userId = await this.userId;
+    if (!userId) {
+      throw new Error("No user id");
+    }
+
+    const init: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    };
+
+    const resp = await this.request(`workspaces/prompts`, init);
+    return (await resp.json()) as PromptPublish;
+  }
+
 }

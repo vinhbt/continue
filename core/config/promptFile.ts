@@ -1,7 +1,7 @@
 import Handlebars from "handlebars";
 import path from "path";
 import * as YAML from "yaml";
-import type { IDE, SlashCommand } from "..";
+import { IDE, PromptItem, SlashCommand } from "..";
 import { walkDir } from "../indexing/walkDir";
 import { stripImages } from "../llm/images";
 import { renderTemplatedString } from "../promptFiles/renderTemplatedString";
@@ -28,6 +28,26 @@ export async function getPromptFiles(
     return Promise.all(results);
   } catch (e) {
     console.error(e);
+    return [];
+  }
+}
+
+export async function getPromptFileNames(
+  ide: IDE,
+  dir: string,
+): Promise<PromptItem[]> {
+  try {
+    const paths = await walkDir(dir, ide, { ignoreFiles: [] });
+    const promptFiles = paths.filter(async (path) => path.endsWith(".prompt"));
+    const results = promptFiles.map(async (path) => {
+      return {
+        name: getBasename(path).split(".prompt")[0],
+        fileUrl: path,
+      }
+    });
+    return Promise.all(results);
+  } catch (e) {
+    console.error("getPromptFileNames error", e);
     return [];
   }
 }

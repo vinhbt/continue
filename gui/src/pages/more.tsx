@@ -61,7 +61,25 @@ function MorePage() {
       >
         Help Center
       </h3>
+
       <div className="p-6 flex flex-col gap-6">
+        <div className="grid grid-cols-3 gap-4 items-center">
+          <div className="col-span-2">
+            <h3 className="my-0">Prompts</h3>
+            <p>
+              See Prompts
+            </p>
+          </div>
+          <SecondaryButton
+            className="col-span-1"
+            onClick={() => {
+              navigate("/prompts");
+            }}
+          >
+            View Prompts
+          </SecondaryButton>
+        </div>
+
         <div className="grid grid-cols-3 gap-4 items-center">
           <div className="col-span-2">
             <h3 className="my-0">Documentation</h3>

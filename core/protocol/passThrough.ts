@@ -17,6 +17,8 @@ export const WEBVIEW_TO_CORE_PASS_THROUGH: (keyof ToCoreFromWebviewProtocol)[] =
     "config/addOpenAiKey",
     "config/addModel",
     "config/newPromptFile",
+    "config/listPromptFile",
+    "config/publishPrompt",
     "config/ideSettingsUpdate",
     "config/getSerializedProfileInfo",
     "config/deleteModel",
