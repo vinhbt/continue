@@ -92,8 +92,8 @@ const PromptLocal: React.FC = () => {
             <Td>
               <PublishButton
                 className="mt-2 mb-4"
-                onClick={() => {
-                  ideMessenger.post("config/publishPrompt", {
+                onClick={ async () => {
+                  await ideMessenger.request("config/publishPrompt", {
                     name: prompt.name,
                     fileUrl: prompt.fileUrl
                   });

@@ -85,7 +85,7 @@ open class ContinueExtensionSettings : PersistentStateComponent<ContinueExtensio
         var userToken: String? = null
         var enableTabAutocomplete: Boolean = true
         var ghAuthToken: String? = null
-        var enableContinueTeamsBeta: Boolean = false
+        var enableContinueTeamsBeta: Boolean = true
         var displayEditorTooltip: Boolean = true
     }
 
@@ -230,6 +230,6 @@ class ContinueExtensionConfigurable : Configurable {
     }
 
     override fun getDisplayName(): String {
-        return "Continue Extension Settings"
+        return "VCopilot Extension Settings"
     }
 }

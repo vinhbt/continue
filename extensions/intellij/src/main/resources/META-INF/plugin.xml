@@ -14,7 +14,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <editorFactoryListener implementation="com.github.continuedev.continueintellijextension.autocomplete.AutocompleteEditorListener"/>
-        <toolWindow id="VContinue" anchor="right" icon="/tool-window-icon.svg"
+        <toolWindow id="VCopilot" anchor="right" icon="/tool-window-icon.svg"
                     factoryClass="com.github.continuedev.continueintellijextension.toolWindow.ContinuePluginToolWindowFactory"/>
         <projectService id="ContinuePluginService"
                         serviceImplementation="com.github.continuedev.continueintellijextension.services.ContinuePluginService"/>
@@ -37,7 +37,7 @@
                 parentId="tools"
                 instance="com.github.continuedev.continueintellijextension.services.ContinueExtensionConfigurable"
                 id="com.github.continuedev.continueintellijextension.services.ContinueExtensionConfigurable"
-                displayName="Continue"/>
+                displayName="VCopilot"/>
         <applicationService
                 serviceImplementation="com.github.continuedev.continueintellijextension.services.ContinueExtensionSettings"/>
     </extensions>
@@ -89,15 +89,15 @@
         </action>
         <action id="continue.viewLogs"
                 class="com.github.continuedev.continueintellijextension.actions.ViewLogsAction"
-                text="View Continue Server Logs"
-                description="View Continue Server Logs">
+                text="View VCopilot Server Logs"
+                description="View VCopilot Server Logs">
             <!-- No shortcut defined -->
         </action>
        
         <action id="continue.focusContinueInputWithoutClear"
                 class="com.github.continuedev.continueintellijextension.actions.FocusContinueInputWithoutClearAction"
                 text="Add selected code to context"
-                description="Focus Continue Input With Edit">
+                description="Focus VCopilot Input With Edit">
             <keyboard-shortcut keymap="$default"
                                first-keystroke="ctrl shift J"/>
             <keyboard-shortcut keymap="Mac OS X"
@@ -109,9 +109,9 @@
 
         <action id="continue.newContinueSession"
                 class="com.github.continuedev.continueintellijextension.actions.NewContinueSessionAction"
-                text="Start New Continue Session"
+                text="Start New VCopilot Session"
                 icon="AllIcons.General.Add"
-                description="Start New Continue Session">
+                description="Start New VCopilot Session">
         </action>
 
         <action id="continue.viewHistory"
