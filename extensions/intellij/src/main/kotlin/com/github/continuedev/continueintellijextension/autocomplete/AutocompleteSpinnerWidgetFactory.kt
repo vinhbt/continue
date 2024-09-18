@@ -49,7 +49,7 @@ class AutocompleteSpinnerWidget(project: Project): EditorBasedWidget(project), S
 
     override fun getTooltipText(): String? {
         val enabled = service<ContinueExtensionSettings>().state.enableTabAutocomplete
-        return if (enabled) "Continue Autocomplete Enabled" else "Continue Autocomplete Disabled"
+        return if (enabled) "VCopilot Autocomplete Enabled" else "VCopilot Autocomplete Disabled"
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
@@ -92,7 +92,7 @@ class AutocompleteSpinnerWidgetFactory: StatusBarWidgetFactory {
     }
 
     override fun getDisplayName(): String {
-        return "Continue Autocomplete"
+        return "VCopilot Autocomplete"
     }
 
     override fun isAvailable(p0: Project): Boolean {
