@@ -6,7 +6,8 @@ function OnboardingQuickstartTab() {
     <div className="flex justify-center items-center">
       <div className="flex flex-col items-center justify-center w-3/4 text-center">
         <div className="mr-5">
-          <ContinueLogo height={75} />
+          {/*<ContinueLogo height={75} />*/}
+          <p className={"text-2xl font-bold"}>Welcome to VCopilot!</p>
         </div>
 
         <p className="text-sm">
