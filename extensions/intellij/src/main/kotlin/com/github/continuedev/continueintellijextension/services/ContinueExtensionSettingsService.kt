@@ -78,9 +78,11 @@ class ContinueRemoteConfigSyncResponse {
 open class ContinueExtensionSettings : PersistentStateComponent<ContinueExtensionSettings.ContinueState> {
 
     class ContinueState {
+        private val vtiDefaultConfigUrl = "http://localhost:3001/api/v1/"
+
         var lastSelectedInlineEditModel: String? = null
         var shownWelcomeDialog: Boolean = false
-        var remoteConfigServerUrl: String? = null
+        var remoteConfigServerUrl: String? = vtiDefaultConfigUrl
         var remoteConfigSyncPeriod: Int = 60
         var userToken: String? = null
         var enableTabAutocomplete: Boolean = true
@@ -116,7 +118,11 @@ open class ContinueExtensionSettings : PersistentStateComponent<ContinueExtensio
             val client = OkHttpClient()
             val baseUrl = state.remoteConfigServerUrl?.removeSuffix("/")
 
-            val requestBuilder = Request.Builder().url("${baseUrl}/sync")
+            val requestBuilder = if (state.userToken != null){
+                Request.Builder().url("${baseUrl}/sync/auth")
+            }  else {
+                Request.Builder().url("${baseUrl}/sync/default")
+            }
 
             if (state.userToken != null) {
                 requestBuilder.addHeader("Authorization", "Bearer ${state.userToken}")
