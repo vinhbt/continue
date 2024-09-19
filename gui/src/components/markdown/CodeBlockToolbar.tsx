@@ -1,20 +1,66 @@
 import {
   ArrowLeftEndOnRectangleIcon,
   CheckIcon,
+  ClipboardIcon,
   PlayIcon,
+  CommandLineIcon,
   EyeIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useContext, useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { defaultBorderRadius, vscEditorBackground } from "..";
+import {
+  defaultBorderRadius,
+  lightGray,
+  vscEditorBackground,
+  vscForeground,
+} from "..";
 import { IdeMessengerContext } from "../../context/IdeMessenger";
-import { isJetBrains } from "../../util";
-import HeaderButtonWithText from "../HeaderButtonWithText";
-import { CopyButton } from "./CopyButton";
-import { useNavigate } from "react-router-dom";
+import { useWebviewListener } from "../../hooks/useWebviewListener";
+import { incrementNextCodeBlockToApplyIndex } from "../../redux/slices/uiStateSlice";
+import {
+  getAltKeyLabel,
+  getFontSize,
+  getMetaKeyLabel,
+  isJetBrains,
+} from "../../util";
+import FileIcon from "../FileIcon";
+import ButtonWithTooltip from "../ButtonWithTooltip";
+import { CopyButton as CopyButtonHeader } from "./CopyButton";
+import { ToolbarButtonWithTooltip } from "./ToolbarButtonWithTooltip";
 import { setLocalStorage } from "../../util/localStorage";
+import { useNavigate } from "react-router-dom";
 
-const TopDiv = styled.div`
+const ToolbarDiv = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: inherit;
+  font-size: ${getFontSize() - 2}px;
+  padding: 3px;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-bottom: 0.5px solid ${lightGray}80;
+  margin: 0;
+`;
+
+export const ToolbarButton = styled.button`
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  background: transparent;
+
+  color: ${vscForeground};
+  font-size: ${getFontSize() - 2}px;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const HoverDiv = styled.div`
   position: sticky;
   top: 0;
   left: 100%;
@@ -24,7 +70,7 @@ const TopDiv = styled.div`
   z-index: 100;
 `;
 
-const SecondDiv = styled.div<{ bottom: boolean }>`
+const InnerHoverDiv = styled.div<{ bottom: boolean }>`
   position: absolute;
   ${(props) => (props.bottom ? "bottom: 3px;" : "top: -11px;")}
   right: 10px;
@@ -40,6 +86,8 @@ interface CodeBlockToolBarProps {
   text: string;
   bottom: boolean;
   language: string | undefined;
+  isNextCodeBlock: boolean;
+  filepath?: string;
 }
 
 const terminalLanguages = ["bash", "sh"];
@@ -64,6 +112,7 @@ const commonTerminalCommands = [
   "ruby",
   "bundle",
 ];
+
 function isTerminalCodeBlock(language: string | undefined, text: string) {
   return (
     terminalLanguages.includes(language) ||
@@ -73,76 +122,186 @@ function isTerminalCodeBlock(language: string | undefined, text: string) {
   );
 }
 
+function getTerminalCommand(text: string): string {
+  return text.startsWith("$ ") ? text.slice(2) : text;
+}
+
 function CodeBlockToolBar(props: CodeBlockToolBarProps) {
   const ideMessenger = useContext(IdeMessengerContext);
-
+  const dispatch = useDispatch();
+  const isTerminal = isTerminalCodeBlock(props.language, props.text);
+  const [showAcceptReject, setShowAcceptReject] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
   const navigate = useNavigate();
 
-  const [applying, setApplying] = useState(false);
+  // Handle apply keyboard shortcut
+  useWebviewListener(
+    "applyCodeFromChat",
+    async () => {
+      await ideMessenger.request("applyToCurrentFile", {
+        text: props.text,
+      });
+      dispatch(incrementNextCodeBlockToApplyIndex({}));
+    },
+    [props.isNextCodeBlock, props.text],
+    !props.isNextCodeBlock,
+  );
 
-  return (
-    <TopDiv>
-      <SecondDiv bottom={props.bottom || false}>
-        {isJetBrains() || (
-          <HeaderButtonWithText
-            text={
-              isTerminalCodeBlock(props.language, props.text)
-                ? "Run in terminal"
-                : applying
-                  ? "Applying..."
-                  : "Apply to current file"
+  function onClickCopy() {
+    if (isJetBrains()) {
+      ideMessenger.request("copyText", { text: props.text });
+    } else {
+      navigator.clipboard.writeText(props.text);
+    }
+
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  }
+
+  function onClickApply() {
+    if (isApplying) return;
+
+    if (isTerminal) {
+      ideMessenger.ide.runCommand(getTerminalCommand(props.text));
+    } else {
+      ideMessenger.post("applyToCurrentFile", { text: props.text });
+      setIsApplying(true);
+      setTimeout(() => setIsApplying(false), 2000);
+      setShowAcceptReject(true);
+    }
+  }
+
+  function onClickHeader() {
+    // TODO: Need to turn into relative or fq path
+    ideMessenger.post("showFile", {
+      filepath: props.filepath,
+    });
+  }
+
+  function onClickAccept() {
+    ideMessenger.post("acceptDiff", { filepath: props.filepath });
+    setShowAcceptReject(false);
+  }
+
+  function onClickReject() {
+    ideMessenger.post("rejectDiff", { filepath: props.filepath });
+    setShowAcceptReject(false);
+  }
+
+  if (!props.filepath) {
+    return (
+      <HoverDiv>
+        <InnerHoverDiv bottom={props.bottom || false}>
+          {!isJetBrains() && isTerminal && (
+            <ButtonWithTooltip
+              text="Run in terminal"
+              disabled={isApplying}
+              style={{ backgroundColor: vscEditorBackground }}
+              onClick={onClickApply}
+            >
+              <CommandLineIcon className="w-4 h-4" />
+            </ButtonWithTooltip>
+          )}
+          <ButtonWithTooltip
+            text="Insert at cursor"
+            style={{ backgroundColor: vscEditorBackground }}
+            onClick={() =>
+              ideMessenger.post("insertAtCursor", { text: props.text })
             }
-            disabled={applying}
+          >
+            <ArrowLeftEndOnRectangleIcon className="w-4 h-4" />
+          </ButtonWithTooltip>
+          <ButtonWithTooltip
+            text="Preview Code"
             style={{ backgroundColor: vscEditorBackground }}
             onClick={() => {
-              if (isTerminalCodeBlock(props.language, props.text)) {
-                let text = props.text;
-                if (text.startsWith("$ ")) {
-                  text = text.slice(2);
-                }
-                ideMessenger.ide.runCommand(text);
-                return;
-              }
-
-              if (applying) return;
-              ideMessenger.post("applyToCurrentFile", {
-                text: props.text,
-              });
-              setApplying(true);
-              setTimeout(() => setApplying(false), 2000);
+              // ideMessenger.post("insertAtCursor", { text: props.text });
+              setLocalStorage("previewInfo", { text: props.text, showCode: true, language: props.language });
+              navigate("/preview");
             }}
           >
-            {applying ? (
-              <CheckIcon className="w-4 h-4 text-green-500" />
-            ) : (
-              <PlayIcon className="w-4 h-4" />
-            )}
-          </HeaderButtonWithText>
-        )}
-        <HeaderButtonWithText
-          text="Insert at cursor"
-          style={{ backgroundColor: vscEditorBackground }}
-          onClick={() => {
-            ideMessenger.post("insertAtCursor", { text: props.text });
-          }}
-        >
-          <ArrowLeftEndOnRectangleIcon className="w-4 h-4" />
-        </HeaderButtonWithText>
+            <EyeIcon className="w-4 h-4" />
+          </ButtonWithTooltip>
 
-        <HeaderButtonWithText
-          text="Preview Code2"
-          style={{ backgroundColor: vscEditorBackground }}
-          onClick={() => {
-            // ideMessenger.post("insertAtCursor", { text: props.text });
-            setLocalStorage("previewInfo", { text: props.text, showCode: true, language: props.language });
-            navigate("/preview");
-          }}
-        >
-          <EyeIcon className="w-4 h-4" />
-        </HeaderButtonWithText>
-        <CopyButton text={props.text} />
-      </SecondDiv>
-    </TopDiv>
+          <CopyButtonHeader text={props.text} />
+        </InnerHoverDiv>
+      </HoverDiv>
+    );
+  }
+
+  return (
+    <ToolbarDiv>
+      <div
+        className="flex items-center cursor-pointer py-0.5 px-0.5"
+        onClick={onClickHeader}
+      >
+        <FileIcon filename={props.filepath} height="18px" width="18px" />
+        <span className="hover:brightness-125 ml-1">{props.filepath}</span>{" "}
+      </div>
+
+      <div className="flex items-center gap-1">
+        <ToolbarButton onClick={onClickCopy}>
+          <div
+            className="flex items-center gap-1 hover:brightness-125 transition-colors duration-200"
+            style={{ color: lightGray }}
+          >
+            {isCopied ? (
+              <>
+                <CheckIcon className="w-3 h-3 text-green-500 hover:brightness-125" />
+                <span>Copied</span>
+              </>
+            ) : (
+              <>
+                <ClipboardIcon className="w-3 h-3 hover:brightness-125" />
+                <span>Copy</span>
+              </>
+            )}
+          </div>
+        </ToolbarButton>
+
+        {!isJetBrains() && (
+          <div className="flex">
+            {!showAcceptReject ? (
+              <ToolbarButton
+                onClick={onClickApply}
+                style={{ color: lightGray }}
+              >
+                <div
+                  className="flex items-center gap-1 hover:brightness-125 transition-colors duration-200"
+                  style={{ color: lightGray }}
+                >
+                  <PlayIcon className="w-3 h-3" />
+                  <span>Apply</span>
+                </div>
+              </ToolbarButton>
+            ) : (
+              <>
+                <ToolbarButtonWithTooltip
+                  onClick={onClickReject}
+                  tooltipContent={`${getMetaKeyLabel()}⇧⌫`}
+                >
+                  <XMarkIcon className="w-4 h-4 text-red-500 hover:brightness-125 mr-1" />
+                  <div className="flex items-center gap-1 hover:brightness-125 transition-colors duration-200 ">
+                    <span>Reject</span>
+                  </div>
+                </ToolbarButtonWithTooltip>
+
+                <ToolbarButtonWithTooltip
+                  onClick={onClickAccept}
+                  tooltipContent={`${getMetaKeyLabel()}⇧⏎`}
+                >
+                  <CheckIcon className="w-4 h-4 text-green-500 hover:brightness-125 mr-1" />
+                  <div className="flex items-center gap-1 hover:brightness-125 transition-colors duration-200">
+                    <span>Accept</span>
+                  </div>
+                </ToolbarButtonWithTooltip>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </ToolbarDiv>
   );
 }
 

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { HeaderButton, StyledTooltip } from ".";
 import { type PlacesType } from "react-tooltip";
-
+import { HeaderButton } from ".";
 import { v4 as uuidv4 } from "uuid";
+import { ToolTip } from "./gui/Tooltip";
 
 interface HeaderButtonWithTextProps {
   text: string | undefined;
@@ -21,7 +21,7 @@ interface HeaderButtonWithTextProps {
   tooltipPlacement?: PlacesType;
 }
 
-const HeaderButtonWithText = React.forwardRef<
+const ButtonWithTooltip = React.forwardRef<
   HTMLButtonElement,
   HeaderButtonWithTextProps
 >((props: HeaderButtonWithTextProps, ref) => {
@@ -59,16 +59,13 @@ const HeaderButtonWithText = React.forwardRef<
       {props.text &&
         tooltipPortalDiv &&
         ReactDOM.createPortal(
-          <StyledTooltip
-            id={tooltipId}
-            place={props.tooltipPlacement ?? "bottom"}
-          >
+          <ToolTip id={tooltipId} place={props.tooltipPlacement ?? "bottom"}>
             {props.text}
-          </StyledTooltip>,
+          </ToolTip>,
           tooltipPortalDiv,
         )}
     </>
   );
 });
 
-export default HeaderButtonWithText;
+export default ButtonWithTooltip;

@@ -21,6 +21,11 @@ export interface ControlPlaneModelDescription extends ModelDescription {}
 //local-s
 export const CONTROL_PLANE_VTI_URL = "http://localhost:3001/api/v1/";
 
+export const DEFAULT_CONTROL_PLANE_PROXY_URL =
+  process.env.CONTROL_PLANE_ENV === "local"
+    ? "http://localhost:3001/"
+    : "https://control-plane-proxy.continue.dev/";
+
 export const CONTROL_PLANE_URL =
   process.env.CONTROL_PLANE_ENV === "local"
     ? "http://localhost:3001/"
