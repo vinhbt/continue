@@ -11,17 +11,17 @@ pushd core
 export PUPPETEER_SKIP_DOWNLOAD='true'
 rm -rf "./node_modules",
 rm -rf "./dist",
-npm install
-npm link
-npm run build:npm
-popd
-
-echo "Installing binary..."
-pushd binary
 rm -rf  "./node_modules",
 rm -rf  "./bin",
 rm -rf  "./dist",
 rm -rf  "./out",
+npm install
+npm link
+npm run build
+popd
+
+echo "Installing binary..."
+pushd binary
 npm install
 npm run build
 popd
