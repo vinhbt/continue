@@ -86,7 +86,11 @@ fun getContinueRemoteConfigPath(remoteHostname: String): String {
     if (Files.notExists(path)) {
         Files.createDirectories(path)
     }
-    return Paths.get(path.toString(), remoteHostname).toString()
+    val configPath = Paths.get(path.toString(), remoteHostname)
+    if (Files.notExists(configPath)) {
+        Files.createDirectories(configPath)
+    }
+    return configPath.toString()
 }
 
 
