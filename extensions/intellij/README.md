@@ -1,10 +1,10 @@
 <!-- Plugin description -->
 
-<h1 align="center">Continue</h1>
+<h1 align="center">VCopilot</h1>
 
 <div align="center">
 
-**[Continue](https://docs.continue.dev) is the leading open-source AI code assistant. You can connect any models and any context to build custom autocomplete and chat experiences inside [VS Code](https://marketplace.visualstudio.com/items?itemName=Continue.continue) and [JetBrains](https://plugins.jetbrains.com/plugin/22707-continue-extension)**
+** VCopilot is the AI code assistant. You can connect any models and any context to build custom autocomplete and chat experiences inside [VS Code](https://marketplace.visualstudio.com/items?itemName=Continue.continue) and [JetBrains](https://plugins.jetbrains.com/plugin/22707-continue-extension)**
 
 </div>
 
@@ -27,15 +27,5 @@
 `@docs`
 
 </div>
-
-## Getting Started
-
-You can try out Continue with our free trial models before configuring your setup.
-
-Learn more about the models and providers [here](https://continue.dev/docs/setup/overview).
-
-## License
-
-[Apache 2.0 © 2023-2024 Continue Dev, Inc.](./LICENSE)
 
 <!-- Plugin description end -->
