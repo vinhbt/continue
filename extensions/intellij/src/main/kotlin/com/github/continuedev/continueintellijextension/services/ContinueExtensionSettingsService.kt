@@ -195,10 +195,18 @@ class ContinueExtensionConfigurable : Configurable {
         return mySettingsComponent!!.panel
     }
 
+    private fun safeParseInt(value: String?, defaultValue: Int = 60): Int {
+        return try {
+            value?.toInt() ?: defaultValue
+        } catch (e: NumberFormatException) {
+            defaultValue
+        }
+    }
+
     override fun isModified(): Boolean {
         val settings = ContinueExtensionSettings.instance
         val modified = mySettingsComponent?.remoteConfigServerUrl?.text != settings.continueState.remoteConfigServerUrl ||
-                mySettingsComponent?.remoteConfigSyncPeriod?.text?.toInt() != settings.continueState.remoteConfigSyncPeriod ||
+                safeParseInt(mySettingsComponent?.remoteConfigSyncPeriod?.text) != settings.continueState.remoteConfigSyncPeriod ||
                 mySettingsComponent?.userToken?.text != settings.continueState.userToken ||
                 mySettingsComponent?.enableTabAutocomplete?.isSelected != settings.continueState.enableTabAutocomplete ||
                 mySettingsComponent?.enableContinueTeamsBeta?.isSelected != settings.continueState.enableContinueTeamsBeta ||
@@ -209,7 +217,7 @@ class ContinueExtensionConfigurable : Configurable {
     override fun apply() {
         val settings = ContinueExtensionSettings.instance
         settings.continueState.remoteConfigServerUrl = mySettingsComponent?.remoteConfigServerUrl?.text
-        settings.continueState.remoteConfigSyncPeriod = mySettingsComponent?.remoteConfigSyncPeriod?.text?.toInt() ?: 60
+        settings.continueState.remoteConfigSyncPeriod = safeParseInt(mySettingsComponent?.remoteConfigSyncPeriod?.text)
         settings.continueState.userToken = mySettingsComponent?.userToken?.text
         settings.continueState.enableTabAutocomplete = mySettingsComponent?.enableTabAutocomplete?.isSelected ?: false
         settings.continueState.enableContinueTeamsBeta = mySettingsComponent?.enableContinueTeamsBeta?.isSelected ?: false
