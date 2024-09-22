@@ -21,9 +21,9 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import javax.swing.*
 
-class ContinueSettingsComponent: DumbAware {
+class ContinueSettingsComponent : DumbAware {
     val panel: JPanel = JPanel(GridBagLayout())
-    val remoteConfigServerUrl: JTextField = JTextField()
+    val remoteConfigServerUrl: JTextField = JTextField("http://localhost:3001/api/v1/")
     val remoteConfigSyncPeriod: JTextField = JTextField()
     val userToken: JTextField = JTextField()
     val enableTabAutocomplete: JCheckBox = JCheckBox("Enable Tab Autocomplete")
@@ -78,11 +78,10 @@ class ContinueRemoteConfigSyncResponse {
 open class ContinueExtensionSettings : PersistentStateComponent<ContinueExtensionSettings.ContinueState> {
 
     class ContinueState {
-        private val vtiDefaultConfigUrl = "http://localhost:3001/api/v1/"
 
         var lastSelectedInlineEditModel: String? = null
         var shownWelcomeDialog: Boolean = false
-        var remoteConfigServerUrl: String? = vtiDefaultConfigUrl
+        var remoteConfigServerUrl: String? = "http://localhost:3001/api/v1/"
         var remoteConfigSyncPeriod: Int = 60
         var userToken: String? = null
         var enableTabAutocomplete: Boolean = true
@@ -100,65 +99,76 @@ open class ContinueExtensionSettings : PersistentStateComponent<ContinueExtensio
     }
 
     override fun loadState(state: ContinueState) {
+        if (state.remoteConfigServerUrl == null || state.remoteConfigServerUrl!!.isEmpty()) {
+            state.remoteConfigServerUrl = "http://localhost:3001/api/v1/"
+        }
         continueState = state
     }
 
     companion object {
         val instance: ContinueExtensionSettings
-            get() = ServiceManager.getService(ContinueExtensionSettings::class.java)
+            get() = service<ContinueExtensionSettings>()
     }
 
     // Sync remote config from server
     private fun syncRemoteConfig() {
-        val state = instance.continueState
+        try {
+            val state = instance.continueState
 
-        if (state.remoteConfigServerUrl != null && state.remoteConfigServerUrl!!.isNotEmpty()) {
-            // download remote config as json file
 
-            val client = OkHttpClient()
-            val baseUrl = state.remoteConfigServerUrl?.removeSuffix("/")
 
-            val requestBuilder = if (state.userToken != null){
-                Request.Builder().url("${baseUrl}/sync/auth")
-            }  else {
-                Request.Builder().url("${baseUrl}/sync/default")
-            }
+            if (state.remoteConfigServerUrl != null && state.remoteConfigServerUrl!!.isNotEmpty()) {
+                // download remote config as json file
+                println("syncRemoteConfig remoteConfigServerUrl is call")
+                val client = OkHttpClient()
+                val baseUrl = state.remoteConfigServerUrl?.removeSuffix("/")
 
-            if (state.userToken != null) {
-                requestBuilder.addHeader("Authorization", "Bearer ${state.userToken}")
-            }
+                val requestBuilder = if (state.userToken != null) {
+                    Request.Builder().url("${baseUrl}/sync/auth")
+                } else {
+                    Request.Builder().url("${baseUrl}/sync/default")
+                }
 
-            val request = requestBuilder.build()
-            var configResponse: ContinueRemoteConfigSyncResponse? = null
+                if (state.userToken != null) {
+                    requestBuilder.addHeader("Authorization", "Bearer ${state.userToken}")
+                }
 
-            try {
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                val request = requestBuilder.build()
+                var configResponse: ContinueRemoteConfigSyncResponse? = null
 
-                    response.body?.string()?.let { responseBody ->
-                        try {
-                            configResponse =
-                                Json.decodeFromString<ContinueRemoteConfigSyncResponse>(responseBody)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            return
+                try {
+                    client.newCall(request).execute().use { response ->
+                        if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+                        response.body?.string()?.let { responseBody ->
+                            try {
+                                configResponse =
+                                    Json.decodeFromString<ContinueRemoteConfigSyncResponse>(responseBody)
+                            } catch (e: Exception) {
+                                println("syncRemoteConfig remoteConfigServerUrl is call api faile ex" + e.message)
+                                e.printStackTrace()
+                                return
+                            }
                         }
                     }
+                } catch (e: IOException) {
+                    println("syncRemoteConfig remoteConfigServerUrl is call ex" + e.message)
+                    e.printStackTrace()
+                    return
                 }
-            } catch (e: IOException) {
-                e.printStackTrace()
-                return
-            }
 
-            if (configResponse?.configJson?.isNotEmpty()!!) {
-                val file = File(getConfigJsonPath(request.url.host))
-                file.writeText(configResponse!!.configJson!!)
-            }
+                if (configResponse?.configJson?.isNotEmpty()!!) {
+                    val file = File(getConfigJsonPath(request.url.host))
+                    file.writeText(configResponse!!.configJson!!)
+                }
 
-            if (configResponse?.configJs?.isNotEmpty()!!) {
-                val file = File(getConfigJsPath(request.url.host))
-                file.writeText(configResponse!!.configJs!!)
+                if (configResponse?.configJs?.isNotEmpty()!!) {
+                    val file = File(getConfigJsPath(request.url.host))
+                    file.writeText(configResponse!!.configJs!!)
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -205,12 +215,13 @@ class ContinueExtensionConfigurable : Configurable {
 
     override fun isModified(): Boolean {
         val settings = ContinueExtensionSettings.instance
-        val modified = mySettingsComponent?.remoteConfigServerUrl?.text != settings.continueState.remoteConfigServerUrl ||
-                safeParseInt(mySettingsComponent?.remoteConfigSyncPeriod?.text) != settings.continueState.remoteConfigSyncPeriod ||
-                mySettingsComponent?.userToken?.text != settings.continueState.userToken ||
-                mySettingsComponent?.enableTabAutocomplete?.isSelected != settings.continueState.enableTabAutocomplete ||
-                mySettingsComponent?.enableContinueTeamsBeta?.isSelected != settings.continueState.enableContinueTeamsBeta ||
-                mySettingsComponent?.displayEditorTooltip?.isSelected != settings.continueState.displayEditorTooltip
+        val modified =
+            mySettingsComponent?.remoteConfigServerUrl?.text != settings.continueState.remoteConfigServerUrl ||
+                    safeParseInt(mySettingsComponent?.remoteConfigSyncPeriod?.text) != settings.continueState.remoteConfigSyncPeriod ||
+                    mySettingsComponent?.userToken?.text != settings.continueState.userToken ||
+                    mySettingsComponent?.enableTabAutocomplete?.isSelected != settings.continueState.enableTabAutocomplete ||
+                    mySettingsComponent?.enableContinueTeamsBeta?.isSelected != settings.continueState.enableContinueTeamsBeta ||
+                    mySettingsComponent?.displayEditorTooltip?.isSelected != settings.continueState.displayEditorTooltip
         return modified
     }
 
@@ -220,10 +231,12 @@ class ContinueExtensionConfigurable : Configurable {
         settings.continueState.remoteConfigSyncPeriod = safeParseInt(mySettingsComponent?.remoteConfigSyncPeriod?.text)
         settings.continueState.userToken = mySettingsComponent?.userToken?.text
         settings.continueState.enableTabAutocomplete = mySettingsComponent?.enableTabAutocomplete?.isSelected ?: false
-        settings.continueState.enableContinueTeamsBeta = mySettingsComponent?.enableContinueTeamsBeta?.isSelected ?: false
+        settings.continueState.enableContinueTeamsBeta =
+            mySettingsComponent?.enableContinueTeamsBeta?.isSelected ?: false
         settings.continueState.displayEditorTooltip = mySettingsComponent?.displayEditorTooltip?.isSelected ?: true
 
-        ApplicationManager.getApplication().messageBus.syncPublisher(SettingsListener.TOPIC).settingsUpdated(settings.continueState)
+        ApplicationManager.getApplication().messageBus.syncPublisher(SettingsListener.TOPIC)
+            .settingsUpdated(settings.continueState)
         ContinueExtensionSettings.instance.addRemoteSyncJob()
     }
 
