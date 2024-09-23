@@ -4,8 +4,7 @@
     <name>VCopilot</name>
     <vendor>VTI</vendor>
     <depends>com.intellij.modules.platform</depends>
-    <depends>org.jetbrains.plugins.terminal</depends>
-<!--    <depends>com.intellij.modules.json</depends>-->
+    <depends>com.intellij.modules.json</depends>
     <idea-version since-build="223.0"/>
 
     <extensions defaultExtensionNs="JavaScript.JsonSchema">

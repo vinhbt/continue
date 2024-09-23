@@ -34,6 +34,7 @@ class AutocompleteSpinnerWidget(project: Project): EditorBasedWidget(project), S
     )
 
     init {
+        Disposer.register(project, this)
         updateIcon()
     }
 
@@ -49,7 +50,8 @@ class AutocompleteSpinnerWidget(project: Project): EditorBasedWidget(project), S
 
     override fun getTooltipText(): String? {
         val enabled = service<ContinueExtensionSettings>().state.enableTabAutocomplete
-        return if (enabled) "VCopilot Autocomplete Enabled" else "VCopilot Autocomplete Disabled"
+
+        return if (enabled) "VCopilot autocomplete Enabled" else "VCopilot autocomplete Disabled"
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
@@ -70,7 +72,7 @@ class AutocompleteSpinnerWidget(project: Project): EditorBasedWidget(project), S
 
         // Update the widget
         val statusBar = WindowManager.getInstance().getStatusBar(project)
-        statusBar.updateWidget(ID())
+        statusBar?.updateWidget(ID())
     }
 
     override fun install(statusBar: StatusBar) {
