@@ -116,11 +116,8 @@ open class ContinueExtensionSettings : PersistentStateComponent<ContinueExtensio
         try {
             val state = instance.continueState
 
-
-
             if (state.remoteConfigServerUrl != null && state.remoteConfigServerUrl!!.isNotEmpty()) {
                 // download remote config as json file
-                println("syncRemoteConfig remoteConfigServerUrl is call")
                 val client = OkHttpClient()
                 val baseUrl = state.remoteConfigServerUrl?.removeSuffix("/")
 
@@ -130,7 +127,7 @@ open class ContinueExtensionSettings : PersistentStateComponent<ContinueExtensio
                     Request.Builder().url("${baseUrl}/sync/default")
                 }
 
-                if (state.userToken != null) {
+                if (!state.userToken.isNullOrEmpty()) {
                     requestBuilder.addHeader("Authorization", "Bearer ${state.userToken}")
                 }
 
