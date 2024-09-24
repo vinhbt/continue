@@ -25,6 +25,8 @@ import { setLastControlServerBetaEnabledStatus } from "../redux/slices/miscSlice
 import { RootState } from "../redux/store";
 import { getFontSize } from "../util";
 import ButtonWithTooltip from "./ButtonWithTooltip";
+import { setDialogMessage, setShowDialog } from "../redux/slices/uiStateSlice";
+import ConfirmationDialog from "./dialogs/ConfirmationDialog";
 
 const StyledListbox = styled(Listbox)`
   background-color: ${vscBackground};
@@ -146,7 +148,7 @@ function ProfileSwitcher(props: {}) {
         !lastControlServerBetaEnabledStatus && enableControlServerBeta;
 
       if (shouldShowPopup) {
-        ideMessenger.ide.showToast("info", "Continue for Teams enabled");
+        ideMessenger.ide.showToast("info", "VCopilot for Teams enabled");
       }
 
       setControlServerBetaEnabled(enableControlServerBeta);
@@ -241,13 +243,26 @@ function ProfileSwitcher(props: {}) {
           if (selectedProfileId === "local") {
             ideMessenger.post("openConfigJson", undefined);
           } else {
-            ideMessenger.post(
-              "openUrl",
-              `http://app.continue.dev/workspaces/${selectedProfileId}/config`,
+            // ideMessenger.post(
+            //   "openUrl",
+            //   `http://app.continue.dev/workspaces/${selectedProfileId}/config`,
+            // );
+            dispatch(setShowDialog(true));
+            dispatch(
+              setDialogMessage(
+                <ConfirmationDialog
+                  text={
+                    "Now Vcopilot only support edit settings in local profile, not support for Teams. Please contacts to SE Operation to edit settings."
+                  }
+                  hideCancelButton={true}
+                  confirmText="Ok"
+                  onConfirm={() => {}}
+                />,
+              ),
             );
           }
         }}
-        text="Configure Continue"
+        text="Configure VCopilot"
       >
         <Cog6ToothIcon width="1.4em" height="1.4em" />
       </ButtonWithTooltip>
@@ -259,7 +274,7 @@ function ProfileSwitcher(props: {}) {
           text={
             session?.account
               ? `Logged in as ${session.account.label}`
-              : "Click to login to Continue"
+              : "Click to login to VCopilot"
           }
           onClick={() => {
             if (session?.account) {
