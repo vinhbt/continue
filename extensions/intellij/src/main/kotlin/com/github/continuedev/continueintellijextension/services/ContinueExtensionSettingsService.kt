@@ -121,10 +121,10 @@ open class ContinueExtensionSettings : PersistentStateComponent<ContinueExtensio
                 val client = OkHttpClient()
                 val baseUrl = state.remoteConfigServerUrl?.removeSuffix("/")
 
-                val requestBuilder = if (state.userToken != null) {
-                    Request.Builder().url("${baseUrl}/sync/auth")
-                } else {
+                val requestBuilder = if (state.userToken.isNullOrEmpty()) {
                     Request.Builder().url("${baseUrl}/sync/default")
+                } else {
+                    Request.Builder().url("${baseUrl}/sync/auth")
                 }
 
                 if (!state.userToken.isNullOrEmpty()) {

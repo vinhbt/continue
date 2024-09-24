@@ -201,7 +201,7 @@ class IdeProtocolClient (
             override fun dispose() {}
         })
 
-        val myPluginId = "com.github.continuedev.continueintellijextension"
+        val myPluginId = "com.github.vcopilot.intellijextension"
         val pluginDescriptor = PluginManager.getPlugin(PluginId.getId(myPluginId)) ?: throw Exception("Plugin not found")
 
         val pluginPath = pluginDescriptor.pluginPath
@@ -279,7 +279,7 @@ class IdeProtocolClient (
                             remoteName = "ssh"
                         }
 
-                        val pluginId = "com.github.continuedev.continueintellijextension"
+                        val pluginId = "com.github.vcopilot.intellijextension"
                         val plugin = PluginManagerCore.getPlugin(PluginId.getId(pluginId))
                         val extensionVersion = plugin?.version ?: "Unknown"
 

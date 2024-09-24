@@ -22,7 +22,7 @@ class CoreMessengerManager(private val project: Project, private val ideProtocol
                 ContinuePluginService::class.java
             )
 
-            val myPluginId = "com.github.continuedev.continueintellijextension"
+            val myPluginId = "com.github.vcopilot.intellijextension"
             val pluginDescriptor = PluginManager.getPlugin(PluginId.getId(myPluginId)) ?: throw Exception("Plugin not found")
 
             val pluginPath = pluginDescriptor.pluginPath
