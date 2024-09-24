@@ -110,7 +110,7 @@ function MorePage() {
           title="Documentation"
           description="Visit the documentation site to learn how to configure and use Continue"
           buttonText="View docs"
-          href="https://docs.continue.dev/"
+          href="http://localhost:3002/docs"
         />
 
         <MoreActionRow
@@ -142,19 +142,19 @@ function MorePage() {
           onClick={() => navigate("/stats")}
         />
 
-        <MoreActionRow
-          title="Have an issue?"
-          description="Let us know on GitHub and we'll do our best to resolve it"
-          buttonText="Create a GitHub issue"
-          href="https://github.com/continuedev/continue/issues/new/choose"
-        />
+        {/*<MoreActionRow*/}
+        {/*  title="Have an issue?"*/}
+        {/*  description="Let us know on GitHub and we'll do our best to resolve it"*/}
+        {/*  buttonText="Create a GitHub issue"*/}
+        {/*  href="https://github.com/continuedev/continue/issues/new/choose"*/}
+        {/*/>*/}
 
-        <MoreActionRow
-          title="Join the community!"
-          description="Join us on Discord to stay up-to-date on the latest developments"
-          buttonText="Continue Discord"
-          href="https://discord.gg/vapESyrFmJ"
-        />
+        {/*<MoreActionRow*/}
+        {/*  title="Join the community!"*/}
+        {/*  description="Join us on Discord to stay up-to-date on the latest developments"*/}
+        {/*  buttonText="Continue Discord"*/}
+        {/*  href="https://discord.gg/vapESyrFmJ"*/}
+        {/*/>*/}
       </div>
 
       <h3
