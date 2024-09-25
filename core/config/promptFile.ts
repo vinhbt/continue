@@ -37,15 +37,14 @@ export async function getPromptFileNames(
   dir: string,
 ): Promise<PromptItem[]> {
   try {
-    const paths = await walkDir(dir, ide, { ignoreFiles: [] });
-    const promptFiles = paths.filter(async (path) => path.endsWith(".prompt"));
-    const results = promptFiles.map(async (path) => {
-      return {
-        name: getBasename(path).split(".prompt")[0],
-        fileUrl: path,
-      }
-    });
-    return Promise.all(results);
+    const paths = (await walkDir(dir, ide, { ignoreFiles: [] })).filter((path) =>
+      path.endsWith(".prompt")
+    );
+
+    return paths.map((path) => ({
+      name: getBasename(path).split(".prompt")[0],
+      fileUrl: path,
+    }));
   } catch (e) {
     console.error("getPromptFileNames error", e);
     return [];
@@ -53,9 +52,9 @@ export async function getPromptFileNames(
 }
 
 const DEFAULT_PROMPT_FILE = `# This is an example ".prompt" file
-# It is used to define and reuse prompts within Continue
-# Continue will automatically create a slash command for each prompt in the .prompts folder
-# To learn more, see the full .prompt file reference: https://docs.continue.dev/features/prompt-files
+# It is used to define and reuse prompts within VCopilot
+# VCopilot will automatically create a slash command for each prompt in the .prompts folder
+# To learn more, see the full .prompt file reference in docs
 temperature: 0.0
 ---
 {{{ diff }}}
