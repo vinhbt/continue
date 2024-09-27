@@ -123,4 +123,16 @@ export class ControlPlaneClient {
     return (await resp.json()) as PromptPublish;
   }
 
+  async getPromptsInWorkspace(workspaceId: string): Promise<PromptPublish[]> {
+    const userId = await this.userId;
+    if (!userId) {
+      return [];
+    }
+
+    const resp = await this.request(`workspaces/prompts/${workspaceId}`, {
+      method: "GET",
+    });
+    return (await resp.json()) as PromptPublish[];
+  }
+
 }

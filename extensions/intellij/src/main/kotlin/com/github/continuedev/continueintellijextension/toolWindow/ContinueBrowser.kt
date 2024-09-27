@@ -44,6 +44,8 @@ class ContinueBrowser(val project: Project, url: String, useOsr: Boolean = false
         "config/newPromptFile",
         "config/listPromptFile",
         "config/publishPrompt",
+        "config/listPromptInServer",
+        "config/downloadPromptContent",
         "config/reload",
         "context/getContextItems",
         "context/loadSubmenuItems",

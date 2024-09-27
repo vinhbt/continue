@@ -19,6 +19,8 @@ export const WEBVIEW_TO_CORE_PASS_THROUGH: (keyof ToCoreFromWebviewProtocol)[] =
     "config/newPromptFile",
     "config/listPromptFile",
     "config/publishPrompt",
+    "config/listPromptInServer",
+    "config/downloadPromptContent",
     "config/ideSettingsUpdate",
     "config/getSerializedProfileInfo",
     "config/deleteModel",

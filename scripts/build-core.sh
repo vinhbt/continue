@@ -17,7 +17,6 @@ rm -rf  "./dist",
 rm -rf  "./out",
 npm install
 npm link
-npm run build
 popd
 
 echo "Installing binary..."

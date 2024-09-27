@@ -1,7 +1,7 @@
 import Handlebars from "handlebars";
 import path from "path";
 import * as YAML from "yaml";
-import { IDE, PromptItem, SlashCommand } from "..";
+import { FileData, IDE, PromptItem, SlashCommand } from "..";
 import { walkDir } from "../indexing/walkDir";
 import { stripImages } from "../llm/images";
 import { renderTemplatedString } from "../promptFiles/renderTemplatedString";
@@ -102,6 +102,31 @@ export async function createNewPromptFile(
   );
 
   await ide.writeFile(promptFilePath, DEFAULT_PROMPT_FILE);
+  await ide.openFile(promptFilePath);
+}
+
+async function getPromptPathFromPromptName(ide: IDE, promptName: string){
+  const workspaceDirs = await ide.getWorkspaceDirs();
+  if(workspaceDirs.length === 0)
+  {
+    throw new Error(
+      "No workspace directories found. Make sure you've opened a folder in your IDE.",
+    );
+  }
+  return path.join(
+    workspaceDirs[0],
+    DEFAULT_PROMPTS_FOLDER,
+    `${promptName}.prompt`,
+  );
+}
+
+export async function createOrUpdatePromptFile(
+  ide: IDE,
+  data: FileData,
+): Promise<void> {
+  const promptFilePath = !data.fileUrl ? await getPromptPathFromPromptName(ide, data.name) : data.fileUrl;
+
+  await ide.writeFile(promptFilePath, data.content);
   await ide.openFile(promptFilePath);
 }
 

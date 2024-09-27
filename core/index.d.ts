@@ -1001,6 +1001,12 @@ export interface PromptPublish {
   updatedAt?: Date;
 }
 
+export interface FileData {
+  name: string,
+  fileUrl?: string;
+  content: string;
+}
+
 // config.ts - give users simplified interfaces
 export interface Config {
   /** If set to true, Continue will collect anonymous usage data to improve the product. If set to false, we will collect nothing. Read here to learn more: https://docs.continue.dev/telemetry */

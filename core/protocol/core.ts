@@ -5,7 +5,7 @@ import {
   ChatMessage,
   ContextItemWithId,
   ContextSubmenuItem,
-  DiffLine,
+  DiffLine, FileData,
   IdeSettings,
   LLMFullCompletionOptions,
   MessageContent,
@@ -56,7 +56,9 @@ export type ToCoreFromIdeOrWebviewProtocol = {
   "config/newPromptFile": [undefined, void];
   // Prompts
   "config/listPromptFile": [undefined, PromptItem[]];
-  "config/publishPrompt": [PromptItem, PromptPublish | null];
+  "config/publishPrompt": [PromptItem, PromptPublish | undefined];
+  "config/listPromptInServer": [undefined, PromptPublish[]];
+  "config/downloadPromptContent": [FileData, void];
   "config/ideSettingsUpdate": [IdeSettings, void];
   "config/getSerializedProfileInfo": [
     undefined,

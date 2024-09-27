@@ -178,6 +178,10 @@ export function devDataPath(): string {
   return sPath;
 }
 
+export function getPromptDataSqlitePath(): string {
+  return path.join(devDataPath(), "promptdata.sqlite");
+}
+
 export function getDevDataSqlitePath(): string {
   return path.join(devDataPath(), "devdata.sqlite");
 }

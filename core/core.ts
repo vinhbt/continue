@@ -8,7 +8,12 @@ import {
   setupLocalConfigAfterFreeTrial,
   setupQuickstartConfig,
 } from "./config/onboarding";
-import { createNewPromptFile, DEFAULT_PROMPTS_FOLDER, getPromptFileNames } from "./config/promptFile";
+import {
+  createNewPromptFile,
+  createOrUpdatePromptFile,
+  DEFAULT_PROMPTS_FOLDER,
+  getPromptFileNames,
+} from "./config/promptFile";
 import { addModel, addOpenAIKey, deleteModel } from "./config/util";
 import { recentlyEditedFilesCache } from "./context/retrieval/recentlyEditedFilesCache";
 import { ContinueServerClient } from "./continueServer/stubs/client";
@@ -29,6 +34,7 @@ import { editConfigJson } from "./util/paths";
 import { Telemetry } from "./util/posthog";
 import { TTS } from "./util/tts";
 import path from "path";
+import { PromptSqliteDb } from "./util/promptSqlite";
 
 export class Core {
   // implements IMessenger<ToCoreProtocol, FromCoreProtocol>
@@ -267,8 +273,7 @@ export class Core {
     on("config/publishPrompt", async (msg) => {
       return this.ide.fileExists(msg.data.fileUrl).then(async (exists) => {
         if (!exists) {
-          await this.ide.showToast("error", `File not found: ${msg.data.fileUrl}`);
-          return null;
+          return undefined;
         } else {
           const promptContent = await this.ide.readFile(msg.data.fileUrl);
           const profileId = this.configHandler.currentProfile.profileId;
@@ -278,15 +283,25 @@ export class Core {
             profileId: profileId,
           });
           if (results) {
-            await this.ide.showToast("info", `Prompt published: ${msg.data.name}`);
             return results;
           } else {
-            await this.ide.showToast("error", `Failed to publish prompt: ${msg.data.name}`);
-            return null;
+            return undefined;
           }
         }
       });
     });
+
+    on("config/listPromptInServer", async (msg) => {
+      return await this.controlPlaneClient.getPromptsInWorkspace(this.configHandler.currentProfile.profileId);
+    });
+
+    on("config/downloadPromptContent", async (msg) => {
+      void createOrUpdatePromptFile(this.ide, msg.data);
+    });
+
+    // on("config/listPromptFromDb", async (msg) => {
+    //   return await PromptSqliteDb.getPromptsByProfile(this.configHandler.currentProfile.profileId);
+    // });
 
     on("config/reload", (msg) => {
       void this.configHandler.reloadConfig();

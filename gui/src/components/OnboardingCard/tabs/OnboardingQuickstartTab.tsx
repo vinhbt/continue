@@ -11,15 +11,20 @@ function OnboardingQuickstartTab() {
         </div>
 
         <p className="text-sm">
-          Quickly get up and running using our API keys. After this trial, we'll
-          help you set up your own models.
+          VCopilot is beta stage so please contacts to SE Operation to supports.
         </p>
 
-        <p className="text-sm">
-          To prevent abuse, we'll ask you to sign in to GitHub.
-        </p>
 
-        <QuickStartSubmitButton />
+        {/*<p className="text-sm">*/}
+        {/*  Quickly get up and running using our API keys. After this trial, we'll*/}
+        {/*  help you set up your own models.*/}
+        {/*</p>*/}
+
+        {/*<p className="text-sm">*/}
+        {/*  To prevent abuse, we'll ask you to sign in to GitHub.*/}
+        {/*</p>*/}
+
+        {/*<QuickStartSubmitButton />*/}
       </div>
     </div>
   );
