@@ -1,5 +1,5 @@
-import { ILLM } from "core";
 import { ConfigHandler } from "core/config/ConfigHandler";
+import { getModelByRole } from "core/config/util";
 import { applyCodeBlock } from "core/edit/lazy/applyCodeBlock";
 import {
   FromCoreProtocol,
@@ -19,7 +19,7 @@ import { getConfigJsonPath } from "core/util/paths";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { VerticalPerLineDiffManager } from "../diff/verticalPerLine/manager";
+import { VerticalDiffManager } from "../diff/vertical/manager";
 import {
   getControlPlaneSessionInfo,
   WorkOsAuthProvider,
@@ -27,7 +27,6 @@ import {
 import { getExtensionUri } from "../util/vscode";
 import { VsCodeIde } from "../VsCodeIde";
 import { VsCodeWebviewProtocol } from "../webviewProtocol";
-import { getModelByRole } from "core/config/util";
 
 /**
  * A shared messenger class between Core and Webview
@@ -76,7 +75,7 @@ export class VsCodeMessenger {
     >,
     private readonly webviewProtocol: VsCodeWebviewProtocol,
     private readonly ide: VsCodeIde,
-    private readonly verticalDiffManagerPromise: Promise<VerticalPerLineDiffManager>,
+    private readonly verticalDiffManagerPromise: Promise<VerticalDiffManager>,
     private readonly configHandlerPromise: Promise<ConfigHandler>,
     private readonly workOsAuthProvider: WorkOsAuthProvider,
   ) {
@@ -84,9 +83,24 @@ export class VsCodeMessenger {
     this.onWebview("showFile", (msg) => {
       this.ide.openFile(msg.data.filepath);
     });
+
+    this.onWebview("vscode/openMoveRightMarkdown", (msg) => {
+      vscode.commands.executeCommand(
+        "markdown.showPreview",
+        vscode.Uri.file(
+          path.join(
+            getExtensionUri().fsPath,
+            "media",
+            "move-chat-panel-right.md",
+          ),
+        ),
+      );
+    });
+
     this.onWebview("openConfigJson", (msg) => {
       this.ide.openFile(getConfigJsonPath());
     });
+
     this.onWebview("readRangeInFile", async (msg) => {
       return await vscode.workspace
         .openTextDocument(msg.data.filepath)

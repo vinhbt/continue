@@ -1,21 +1,25 @@
-import type { AutocompleteInput } from "../autocomplete/completionProvider";
-import { ProfileDescription } from "../config/ConfigHandler";
-import {
+import type {
   BrowserSerializedContinueConfig,
   ChatMessage,
   ContextItemWithId,
   ContextSubmenuItem,
-  DiffLine, FileData,
+  DiffLine,
+  FileData,
   IdeSettings,
   LLMFullCompletionOptions,
   MessageContent,
   ModelDescription,
-  PersistedSessionInfo, PromptItem, PromptPublish,
+  ModelRoles,
+  PersistedSessionInfo,
+  PromptItem,
+  PromptPublish,
   RangeInFile,
   SerializedContinueConfig,
   SessionInfo,
   SiteIndexingConfig,
 } from "../";
+import type { AutocompleteInput } from "../autocomplete/completionProvider";
+import { ProfileDescription } from "../config/ConfigHandler";
 
 export type ProtocolGeneratorType<T> = AsyncGenerator<{
   done?: boolean;
@@ -50,7 +54,10 @@ export type ToCoreFromIdeOrWebviewProtocol = {
   "devdata/log": [{ tableName: string; data: any }, void];
   "config/addOpenAiKey": [string, void];
   "config/addModel": [
-    { model: SerializedContinueConfig["models"][number] },
+    {
+      model: SerializedContinueConfig["models"][number];
+      role?: keyof ModelRoles;
+    },
     void,
   ];
   "config/newPromptFile": [undefined, void];
@@ -59,6 +66,7 @@ export type ToCoreFromIdeOrWebviewProtocol = {
   "config/publishPrompt": [PromptItem, PromptPublish | undefined];
   "config/listPromptInServer": [undefined, PromptPublish[]];
   "config/downloadPromptContent": [FileData, void];
+  // Prompts e
   "config/ideSettingsUpdate": [IdeSettings, void];
   "config/getSerializedProfileInfo": [
     undefined,

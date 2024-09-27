@@ -19,16 +19,12 @@ import {
 import { IdeMessengerContext } from "../../context/IdeMessenger";
 import { useWebviewListener } from "../../hooks/useWebviewListener";
 import { incrementNextCodeBlockToApplyIndex } from "../../redux/slices/uiStateSlice";
-import {
-  getAltKeyLabel,
-  getFontSize,
-  getMetaKeyLabel,
-  isJetBrains,
-} from "../../util";
+import { getFontSize, getMetaKeyLabel, isJetBrains } from "../../util";
 import FileIcon from "../FileIcon";
 import ButtonWithTooltip from "../ButtonWithTooltip";
 import { CopyButton as CopyButtonHeader } from "./CopyButton";
 import { ToolbarButtonWithTooltip } from "./ToolbarButtonWithTooltip";
+import { getBasename } from "core/util";
 import { setLocalStorage } from "../../util/localStorage";
 import { useNavigate } from "react-router-dom";
 
@@ -233,11 +229,15 @@ function CodeBlockToolBar(props: CodeBlockToolBarProps) {
   return (
     <ToolbarDiv>
       <div
-        className="flex items-center cursor-pointer py-0.5 px-0.5"
+        className="flex items-center cursor-pointer py-0.5 px-0.5 max-w-[50%]"
         onClick={onClickHeader}
       >
         <FileIcon filename={props.filepath} height="18px" width="18px" />
-        <span className="hover:brightness-125 ml-1">{props.filepath}</span>{" "}
+        <div className="ml-1 truncate">
+          <span className="hover:brightness-125 truncate inline-block w-full">
+            {getBasename(props.filepath)}
+          </span>
+        </div>
       </div>
 
       <div className="flex items-center gap-1">
@@ -249,12 +249,12 @@ function CodeBlockToolBar(props: CodeBlockToolBarProps) {
             {isCopied ? (
               <>
                 <CheckIcon className="w-3 h-3 text-green-500 hover:brightness-125" />
-                <span>Copied</span>
+                <span className="hidden sm:inline">Copied</span>
               </>
             ) : (
               <>
                 <ClipboardIcon className="w-3 h-3 hover:brightness-125" />
-                <span>Copy</span>
+                <span className="hidden xs:inline">Copy</span>
               </>
             )}
           </div>
@@ -272,7 +272,7 @@ function CodeBlockToolBar(props: CodeBlockToolBarProps) {
                   style={{ color: lightGray }}
                 >
                   <PlayIcon className="w-3 h-3" />
-                  <span>Apply</span>
+                  <span className="hidden xs:inline">Apply</span>
                 </div>
               </ToolbarButton>
             ) : (

@@ -658,9 +658,7 @@
                   "llama3.1-70b",
                   "llama3.1-405b",
                   "gpt-3.5-turbo",
-                  "phind-codellama-34b",
                   "gemini-pro",
-                  "mistral-8x7b",
                   "claude-3-5-sonnet-20240620",
                   "claude-3-haiku-20240307",
                   "AUTODETECT"
@@ -2354,6 +2352,13 @@
               "description": "The maximum number of tokens that each chunk of a document is allowed to have",
               "type": "integer",
               "minimum": 128,
+              "exclusiveMaximum": 2147483647
+            },
+            "maxBatchSize": {
+              "title": "Maximum Batch Size",
+              "description": "The maximum number of chunks that can be sent to the embeddings provider in a single request",
+              "type": "integer",
+              "minimum": 1,
               "exclusiveMaximum": 2147483647
             },
             "region": {
